@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
+import {IDSM} from '@interfaces/IDSM.sol';
 import {IHats} from 'hats-v1/interfaces/IHats.sol';
-import {IDSM} from 'interfaces/IDSM.sol';
 
 contract DSM is IDSM {
   mapping(address _contract => bool _registered) internal _registeredContracts;

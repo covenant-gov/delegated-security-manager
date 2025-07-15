@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import {IDSM} from 'interfaces/IDSM.sol';
+import {IDSM} from '@interfaces/IDSM.sol';
 
 /**
  * @title DSM Module
