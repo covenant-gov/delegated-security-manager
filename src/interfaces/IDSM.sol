@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.23;
+pragma solidity ^0.8.27;
 
 /**
  * @title Delegated Security Manager (DSM) Contract
@@ -7,6 +7,12 @@ pragma solidity 0.8.23;
  * @notice This is a security manager contract that allows for the delegation of security using Hats protocol
  */
 interface IDSM {
+  /**
+   * @notice Parameters for the execution of a contract
+   * @param localAdminHatId The ID of the local admin hat
+   * @param executionPeriod The period of execution by local admin hat
+   * @param nextExpiry The next expiry of the execution
+   */
   struct ExecutionParams {
     uint256 localAdminHatId;
     uint64 executionPeriod;
