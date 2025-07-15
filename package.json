@@ -1,14 +1,14 @@
 {
-  "name": "solidity-foundry-boilerplate",
+  "name": "delegated-security-manager",
   "version": "1.0.0",
-  "description": "Production ready Solidity boilerplate with Foundry",
-  "homepage": "https://github.com/defi-wonderland/solidity-foundry-boilerplate#readme",
+  "description": "Covenant Delegated Security Manager",
+  "homepage": "https://github.com/covenant-gov/delegated-security-manager",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/defi-wonderland/solidity-foundry-boilerplate.git"
+    "url": "git+https://github.com/covenant-gov/delegated-security-manager.git"
   },
   "license": "MIT",
-  "author": "Wonderland",
+  "author": "Covenant",
   "scripts": {
     "build": "forge build",
     "build:optimized": "FOUNDRY_PROFILE=optimized forge build",
