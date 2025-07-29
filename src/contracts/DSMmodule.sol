@@ -21,5 +21,6 @@ contract DSMmodule {
   /// @param _dsm The address of the DSM contract
   constructor(address _dsm) {
     DSM = IDSM(_dsm);
+    if (DSM.GENERAL_ADMIN_HAT_ID() == 0) revert IDSM.NotActive();
   }
 }

@@ -1,0 +1,22 @@
+DSMmodule::constructor
+├── when passing valid DSM address with valid hat
+│   └── it deploys and sets DSM variable
+└── when passing DSM address with invalid hat
+    └── it reverts with NotActive
+
+
+DSMmodule::onlyAdmin
+├── when DSM executable returns true
+│   └── it allows execution
+├── when DSM executable returns false
+│   └── it reverts with NotAuthorized
+└── when DSM executable reverts
+    ├── when contract not registered
+    │   └── it reverts with NotRegistered
+    └── when caller not authorized
+        └── it reverts with NotAuthorized
+
+
+DSMmodule::DSM
+└── when called
+    └── it returns the correct DSM contract address

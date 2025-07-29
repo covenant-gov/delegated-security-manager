@@ -1,0 +1,37 @@
+DSM::constructor
+├── when passing valid hat id
+│   └── it deploys and sets GENERAL_ADMIN_HAT_ID
+└── when passing invalid hat id
+    └── it reverts with NotActive
+
+
+DSM::unlockContractExecution
+├── when called by general admin with registered contract
+│   ├── it updates nextExpiry to current timestamp + executionPeriod
+│   └── it emits UnlockContractExecution event
+├── when called by general admin with unregistered contract
+│   └── it reverts with NotRegistered
+└── when called by non-general admin
+    └── it reverts with NotAuthorized
+
+
+DSM::registerContract
+├── when called by general admin with active hat
+│   ├── when passing valid parameters
+│   │   ├── it sets contract as registered
+│   │   ├── it sets execution parameters correctly
+│   │   ├── it sets nextExpiry to 0
+│   │   └── it emits RegisterContract event
+│   └── when passing zero execution period
+│       ├── it still registers the contract
+│       ├── it sets execution parameters correctly
+│       └── it emits RegisterContract event
+├── when called by general admin with inactive hat
+│   └── it reverts with NotActive
+└── when called by non-general admin
+    └── it reverts with NotAuthorized
+
+
+DSM::generalAdminHatId
+└── when called
+    └── it returns the correct general admin hat ID

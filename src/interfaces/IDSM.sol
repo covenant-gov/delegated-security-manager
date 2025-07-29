@@ -44,6 +44,8 @@ interface IDSM {
   error NotAuthorized();
   /// @notice Thrown when the contract is not registered
   error NotRegistered();
+  /// @notice Thrown when the hat is not active
+  error NotActive();
 
   /*///////////////////////////////////////////////////////////////
                             LOGIC
