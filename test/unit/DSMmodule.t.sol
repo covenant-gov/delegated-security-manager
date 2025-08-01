@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import {UnitTest} from './UnitTest.sol';
-
 import {DSMmodule} from '@contracts/DSMmodule.sol';
 import {IDSM} from '@interfaces/IDSM.sol';
+import {UnitTest} from 'test/unit/UnitTest.sol';
 
 contract DSMmoduleTest is UnitTest {
   DSMmodule public dsmModule;
@@ -37,7 +36,7 @@ contract DSMmoduleTest is UnitTest {
 
   // -- View Functions --
 
-  function test_DSM() external {
+  function test_DSM() external view {
     assertEq(address(dsmModule.DSM()), address(dsm));
   }
 
