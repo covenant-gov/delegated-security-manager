@@ -13,19 +13,12 @@
     "build": "forge build",
     "build:optimized": "FOUNDRY_PROFILE=optimized forge build",
     "coverage": "forge coverage --report summary --report lcov --match-path 'test/unit/*'",
-    "deploy:mainnet": "bash -c 'source .env && forge script Deploy --rpc-url $MAINNET_RPC --account $MAINNET_DEPLOYER_NAME --broadcast --verify --chain mainnet -vvvvv'",
-    "deploy:sepolia": "bash -c 'source .env && forge script Deploy --rpc-url $SEPOLIA_RPC --account $SEPOLIA_DEPLOYER_NAME --broadcast --verify --chain sepolia -vvvvv'",
     "lint:check": "yarn lint:sol && forge fmt --check",
     "lint:fix": "sort-package-json && forge fmt && yarn lint:sol --fix",
-    "lint:natspec": "lintspec src -f variable",
     "lint:sol": "solhint 'src/**/*.sol' 'script/**/*.sol' 'test/**/*.sol'",
     "prepare": "husky",
     "test": "forge test -vvv",
-    "test:fuzz": "medusa fuzz",
-    "test:integration": "forge test --match-contract Integration -vvv",
-    "test:symbolic": "halmos",
-    "test:unit": "forge test --match-contract Unit -vvv",
-    "test:unit:deep": "FOUNDRY_FUZZ_RUNS=5000 yarn test:unit"
+    "test:unit": "forge test --match-contract Unit -vvv"
   },
   "lint-staged": {
     "*.{js,css,md,ts,sol}": "forge fmt",

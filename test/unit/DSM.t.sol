@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import {UnitTest} from './UnitTest.sol';
 import {DSM, IDSM} from '@contracts/DSM.sol';
+import {UnitTest} from 'test/unit/UnitTest.sol';
 
 contract DSMTest is UnitTest {
   // -- Modifiers --
@@ -34,7 +34,7 @@ contract DSMTest is UnitTest {
 
   // -- View functions --
 
-  function test_GeneralAdminHatId() external {
+  function test_GeneralAdminHatId() external view {
     assertEq(dsm.GENERAL_ADMIN_HAT_ID(), VALID_HAT_ID);
   }
 
