@@ -15,7 +15,6 @@
     "coverage": "forge coverage --report summary --report lcov --match-path 'test/unit/*'",
     "lint:check": "yarn lint:sol && forge fmt --check",
     "lint:fix": "sort-package-json && forge fmt && yarn lint:sol --fix",
-    "lint:natspec": "lintspec src -f variable",
     "lint:sol": "solhint 'src/**/*.sol' 'script/**/*.sol' 'test/**/*.sol'",
     "prepare": "husky",
     "test": "forge test -vvv",
