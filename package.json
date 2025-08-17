@@ -18,7 +18,7 @@
     "lint:sol": "solhint 'src/**/*.sol' 'script/**/*.sol' 'test/**/*.sol'",
     "prepare": "husky",
     "test": "forge test -vvv",
-    "test:unit": "forge test --match-contract Unit -vvv"
+    "test:unit": "forge test --match-path 'test/unit/*' -vvv"
   },
   "lint-staged": {
     "*.{js,css,md,ts,sol}": "forge fmt",
