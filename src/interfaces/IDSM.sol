@@ -36,6 +36,12 @@ interface IDSM {
    */
   event UnlockContractExecution(address indexed _contract);
 
+  /**
+   * @notice Emitted when the execution of a contract is locked
+   * @param _contract The address of the contract
+   */
+  event LockContractExecution(address indexed _contract);
+
   /*///////////////////////////////////////////////////////////////
                             ERRORS
   //////////////////////////////////////////////////////////////*/
@@ -51,10 +57,17 @@ interface IDSM {
                             LOGIC
   //////////////////////////////////////////////////////////////*/
   /**
-   * @notice Unlocks the execution of a contract
+   * @notice Unlocks the execution of a contract for the duration of the execution period
    * @param _contract The address of the contract to unlock
    */
   function unlockContractExecution(address _contract) external;
+
+  /**
+   * @notice Locks the execution of a contract
+   * @dev Contract will automatically lock after execution period expires if not locked manually
+   * @param _contract The address of the contract to lock
+   */
+  function lockContractExecution(address _contract) external;
 
   /**
    * @notice Registers a contract with the DSM

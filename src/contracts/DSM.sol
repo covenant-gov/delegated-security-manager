@@ -55,6 +55,12 @@ contract DSM is IDSM {
   }
 
   /// @inheritdoc IDSM
+  function lockContractExecution(address _contract) external onlyGeneralAdmin onlyRegistered(_contract) {
+    _executionParams[_contract].nextExpiry = uint64(block.timestamp);
+    emit LockContractExecution(_contract);
+  }
+
+  /// @inheritdoc IDSM
   function registerContract(
     address _contract,
     uint256 _localAdminHatId,

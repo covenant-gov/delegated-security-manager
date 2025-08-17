@@ -119,4 +119,91 @@ contract DSMTest is UnitTest {
 
     assertFalse(_isContractRegistered(TEST_CONTRACT));
   }
+
+  // -- Lock Contract Execution --
+
+  function test_LockContractExecutionSuccess() external isGeneralAdmin {
+    _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
+    dsm.registerContract(TEST_CONTRACT, LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
+
+    // First unlock to set an expiry time
+    dsm.unlockContractExecution(TEST_CONTRACT);
+    vm.stopPrank();
+
+    uint256 timestampAfterUnlock = block.timestamp;
+
+    // Advance time to ensure we're in execution period
+    vm.warp(timestampAfterUnlock + EXECUTION_PERIOD / 2);
+
+    _mockIsAdminOfHat(LOCAL_ADMIN, LOCAL_ADMIN_HAT_ID, true);
+    vm.prank(LOCAL_ADMIN);
+    assertTrue(dsm.executable(TEST_CONTRACT, LOCAL_ADMIN));
+
+    // Now lock the contract
+    vm.expectEmit(true, false, false, false);
+    emit IDSM.LockContractExecution(TEST_CONTRACT);
+
+    vm.prank(GENERAL_ADMIN);
+    dsm.lockContractExecution(TEST_CONTRACT);
+
+    // Verify contract is now locked (nextExpiry should be current timestamp)
+    (,, uint64 nextExpiry) = _getExecutionParams(TEST_CONTRACT);
+    assertEq(nextExpiry, timestampAfterUnlock + EXECUTION_PERIOD / 2);
+
+    // Verify executable returns false for local admin
+    _mockIsAdminOfHat(LOCAL_ADMIN, LOCAL_ADMIN_HAT_ID, true);
+    vm.prank(LOCAL_ADMIN);
+    assertFalse(dsm.executable(TEST_CONTRACT, LOCAL_ADMIN));
+  }
+
+  function test_LockContractExecutionRevert_NotRegistered() external isGeneralAdmin {
+    vm.expectRevert(IDSM.NotRegistered.selector);
+    dsm.lockContractExecution(TEST_CONTRACT);
+  }
+
+  function test_LockContractExecutionRevert_NotAuthorized() external {
+    _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
+    _mockIsAdminOfHat(GENERAL_ADMIN, VALID_HAT_ID, true);
+    vm.startPrank(GENERAL_ADMIN);
+    dsm.registerContract(TEST_CONTRACT, LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
+    vm.stopPrank();
+
+    _mockIsAdminOfHat(address(this), VALID_HAT_ID, false);
+    vm.expectRevert(IDSM.NotAuthorized.selector);
+    dsm.lockContractExecution(TEST_CONTRACT);
+  }
+
+  // -- Executable Function --
+
+  function test_ExecutableReturnsFalse_ExpiredExecution() external {
+    // Register and unlock contract
+    _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
+    _mockIsAdminOfHat(GENERAL_ADMIN, VALID_HAT_ID, true);
+    vm.startPrank(GENERAL_ADMIN);
+    dsm.registerContract(TEST_CONTRACT, LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
+    dsm.unlockContractExecution(TEST_CONTRACT);
+    vm.stopPrank();
+
+    // Fast forward past execution period
+    vm.warp(block.timestamp + EXECUTION_PERIOD + 1);
+
+    // Should return false since execution period expired
+    _mockIsAdminOfHat(LOCAL_ADMIN, LOCAL_ADMIN_HAT_ID, true);
+    vm.prank(LOCAL_ADMIN);
+    assertFalse(dsm.executable(TEST_CONTRACT, LOCAL_ADMIN));
+  }
+
+  function test_ExecutableReturnsFalse_NotUnlocked() external {
+    // Register contract but don't unlock
+    _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
+    _mockIsAdminOfHat(GENERAL_ADMIN, VALID_HAT_ID, true);
+    vm.startPrank(GENERAL_ADMIN);
+    dsm.registerContract(TEST_CONTRACT, LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
+    vm.stopPrank();
+
+    // Should return false since nextExpiry is 0 (never unlocked)
+    _mockIsAdminOfHat(LOCAL_ADMIN, LOCAL_ADMIN_HAT_ID, true);
+    vm.prank(LOCAL_ADMIN);
+    assertFalse(dsm.executable(TEST_CONTRACT, LOCAL_ADMIN));
+  }
 }
