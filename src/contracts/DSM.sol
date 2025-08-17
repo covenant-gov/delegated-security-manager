@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import {IDSM} from '@interfaces/IDSM.sol';
-import {IHats} from 'hats-core/interfaces/IHats.sol';
+import {IHats} from 'hats-core/Interfaces/IHats.sol';
 
 contract DSM is IDSM {
   /// @notice Hats protocol v1 contract CREATE2 address on all networks
