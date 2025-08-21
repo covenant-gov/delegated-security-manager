@@ -8,19 +8,22 @@ contract UnitTest is Test {
   // -- Setup --
 
   function setUp() public virtual {
-    _mockHatMaxSupply(VALID_HAT_ID, 100);
-    dsm = new DSM(VALID_HAT_ID);
+    _mockHatMaxSupply(GENERAL_ADMIN_HAT_ID, 100);
+    _mockHatMaxSupply(LOCAL_MANAGER_HAT_ID, 100);
+    dsm = new DSM(GENERAL_ADMIN_HAT_ID, LOCAL_MANAGER_HAT_ID);
   }
 
   // -- Constants --
 
   address public constant HATS_ADDRESS = 0x3bc1A0Ad72417f2d411118085256fC53CBdDd137;
-  uint256 public constant VALID_HAT_ID = 1;
+  uint256 public constant GENERAL_ADMIN_HAT_ID = 1;
   uint256 public constant INVALID_HAT_ID = 2;
+  uint256 public constant LOCAL_MANAGER_HAT_ID = 3;
   uint256 public constant LOCAL_ADMIN_HAT_ID = 100;
   address public constant TEST_CONTRACT = address(0x123);
   address public constant GENERAL_ADMIN = address(0x456);
-  address public constant LOCAL_ADMIN = address(0x789);
+  address public constant LOCAL_MANAGER = address(0x789);
+  address public constant LOCAL_ADMIN = address(0x937);
   uint64 public constant EXECUTION_PERIOD = 1 hours; // 3600
 
   // -- State variables --
