@@ -10,6 +10,8 @@ contract DSM is IDSM {
 
   /// @inheritdoc IDSM
   uint256 public immutable GENERAL_ADMIN_HAT_ID;
+  /// @inheritdoc IDSM
+  uint256 public immutable LOCAL_MANAGER_HAT_ID;
 
   mapping(address _contract => bool _registered) internal _registeredContracts;
   mapping(address _contract => ExecutionParams _conditions) internal _executionParams;
@@ -17,6 +19,12 @@ contract DSM is IDSM {
   /// @notice Modifier to check if the caller is the general admin
   modifier onlyGeneralAdmin() {
     if (!_HATS.isAdminOfHat(msg.sender, GENERAL_ADMIN_HAT_ID)) revert NotAuthorized();
+    _;
+  }
+
+  /// @notice Modifier to check if the caller is the general admin
+  modifier onlyLocalManager() {
+    if (!_HATS.isAdminOfHat(msg.sender, LOCAL_MANAGER_HAT_ID)) revert NotAuthorized();
     _;
   }
 
@@ -35,7 +43,7 @@ contract DSM is IDSM {
 
   /// @notice Modifier to check if the hat is active
   modifier onlyActiveHat(uint256 _hatId) {
-    if (_HATS.getHatMaxSupply(_hatId) == 0) revert NotActive();
+    if (!_isActiveHat(_hatId)) revert NotActive();
     _;
   }
 
@@ -43,10 +51,14 @@ contract DSM is IDSM {
    * @notice Constructor to initialize the DSM
    * @param _generalAdminHatId The ID of the general admin hat
    */
-  constructor(uint256 _generalAdminHatId) {
-    if (_HATS.getHatMaxSupply(_generalAdminHatId) == 0) revert NotActive();
+  constructor(uint256 _generalAdminHatId, uint256 _localManagerHatId) {
+    if (!_isActiveHat(_generalAdminHatId)) revert NotActive();
+    if (!_isActiveHat(_localManagerHatId)) revert NotActive();
     GENERAL_ADMIN_HAT_ID = _generalAdminHatId;
+    LOCAL_MANAGER_HAT_ID = _localManagerHatId;
   }
+
+  // --- Logic --- //
 
   /// @inheritdoc IDSM
   function unlockContractExecution(address _contract) external onlyGeneralAdmin onlyRegistered(_contract) {
@@ -66,10 +78,21 @@ contract DSM is IDSM {
     uint256 _localAdminHatId,
     uint64 _executionPeriod
   ) external onlyGeneralAdmin onlyActiveHat(_localAdminHatId) {
+    if (_isRegistered(_contract)) revert Registered();
     _registeredContracts[_contract] = true;
-    _executionParams[_contract] =
-      ExecutionParams({localAdminHatId: _localAdminHatId, executionPeriod: _executionPeriod, nextExpiry: uint64(0)});
+    _updateContract(_contract, _localAdminHatId, _executionPeriod);
     emit RegisterContract(_contract, _localAdminHatId, _executionPeriod);
+  }
+
+  /// @inheritdoc IDSM
+  function updateContract(
+    address _contract,
+    uint256 _localAdminHatId,
+    uint64 _executionPeriod
+  ) external onlyLocalManager onlyActiveHat(_localAdminHatId) {
+    if (!_isRegistered(_contract)) revert NotRegistered();
+    _updateContract(_contract, _localAdminHatId, _executionPeriod);
+    emit UpdateContract(_contract, _localAdminHatId, _executionPeriod);
   }
 
   /// @inheritdoc IDSM
@@ -77,7 +100,61 @@ contract DSM is IDSM {
     address _contract,
     address _caller
   ) external view onlyContractAdmin(_contract, _caller) returns (bool _permitted) {
+    _permitted = _isExecutable(_contract);
+  }
+
+  /// @inheritdoc IDSM
+  function params(address _contract)
+    external
+    view
+    returns (uint256 _localAdminHatId, uint64 _executionPeriod, uint64 _nextExpiry, bool _executable)
+  {
+    if (!_isRegistered(_contract)) revert NotRegistered();
+    ExecutionParams memory _params = _executionParams[_contract];
+    _localAdminHatId = _params.localAdminHatId;
+    _executionPeriod = _params.executionPeriod;
+    _nextExpiry = _params.nextExpiry;
+    _executable = _isExecutable(_contract);
+  }
+
+  // --- Internal --- //
+
+  /**
+   * @notice Internal function to update the contract
+   * @param _contract The address of the contract
+   * @param _localAdminHatId The ID of the local admin hat
+   * @param _executionPeriod The period of the execution
+   */
+  function _updateContract(address _contract, uint256 _localAdminHatId, uint64 _executionPeriod) internal {
+    _executionParams[_contract] =
+      ExecutionParams({localAdminHatId: _localAdminHatId, executionPeriod: _executionPeriod, nextExpiry: uint64(0)});
+  }
+
+  /**
+   * @notice Internal function to check if the contract is executable
+   * @param _contract The address of the contract
+   * @return _permitted whether the execution window is open
+   */
+  function _isExecutable(address _contract) internal view returns (bool _permitted) {
     if (block.timestamp < _executionParams[_contract].nextExpiry) _permitted = true;
     else _permitted = false;
+  }
+
+  /**
+   * @notice Internal function to check if the contract is registered
+   * @param _contract The address of the contract
+   * @return bool True if the contract is registered, false otherwise
+   */
+  function _isRegistered(address _contract) internal view returns (bool) {
+    return _registeredContracts[_contract];
+  }
+
+  /**
+   * @notice Internal function to check if the hat is active
+   * @param _hatId The ID of the hat
+   * @return bool True if the hat is active, false otherwise
+   */
+  function _isActiveHat(uint256 _hatId) internal view returns (bool) {
+    return _HATS.getHatMaxSupply(_hatId) != 0;
   }
 }

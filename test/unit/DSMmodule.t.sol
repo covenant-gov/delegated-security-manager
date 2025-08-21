@@ -45,7 +45,7 @@ contract DSMmoduleTest is UnitTest {
   function test_OnlyAdminSuccess() external {
     // Register test contract in DSM
     _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
-    _mockIsAdminOfHat(GENERAL_ADMIN, VALID_HAT_ID, true);
+    _mockIsAdminOfHat(GENERAL_ADMIN, GENERAL_ADMIN_HAT_ID, true);
     vm.startPrank(GENERAL_ADMIN);
     dsm.registerContract(address(testContract), LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
     dsm.unlockContractExecution(address(testContract));
@@ -60,7 +60,7 @@ contract DSMmoduleTest is UnitTest {
   function test_OnlyAdminRevert_ExecutableReturnsFalse() external {
     // Register test contract but don't unlock execution (expired)
     _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
-    _mockIsAdminOfHat(GENERAL_ADMIN, VALID_HAT_ID, true);
+    _mockIsAdminOfHat(GENERAL_ADMIN, GENERAL_ADMIN_HAT_ID, true);
     vm.startPrank(GENERAL_ADMIN);
     dsm.registerContract(address(testContract), LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
     vm.stopPrank();
@@ -83,7 +83,7 @@ contract DSMmoduleTest is UnitTest {
   function test_OnlyAdminRevert_NotAuthorized() external {
     // Register test contract but call as non-admin
     _mockHatMaxSupply(LOCAL_ADMIN_HAT_ID, 100);
-    _mockIsAdminOfHat(GENERAL_ADMIN, VALID_HAT_ID, true);
+    _mockIsAdminOfHat(GENERAL_ADMIN, GENERAL_ADMIN_HAT_ID, true);
     vm.startPrank(GENERAL_ADMIN);
     dsm.registerContract(address(testContract), LOCAL_ADMIN_HAT_ID, EXECUTION_PERIOD);
     dsm.unlockContractExecution(address(testContract));
