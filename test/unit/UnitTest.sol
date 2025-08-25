@@ -38,7 +38,7 @@ contract UnitTest is Test {
 
   function _mockIsAdminOfHat(address user, uint256 hatId, bool isAdmin) internal {
     vm.mockCall(
-      HATS_ADDRESS, abi.encodeWithSignature('isAdminOfHat(address,uint256)', user, hatId), abi.encode(isAdmin)
+      HATS_ADDRESS, abi.encodeWithSignature('isWearerOfHat(address,uint256)', user, hatId), abi.encode(isAdmin)
     );
   }
 
