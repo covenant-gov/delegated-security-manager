@@ -18,20 +18,20 @@ contract DSM is IDSM {
 
   /// @notice Modifier to check if the caller is the general admin
   modifier onlyGeneralAdmin() {
-    if (!_HATS.isAdminOfHat(msg.sender, GENERAL_ADMIN_HAT_ID)) revert NotAuthorized();
+    if (!_HATS.isWearerOfHat(msg.sender, GENERAL_ADMIN_HAT_ID)) revert NotAuthorized();
     _;
   }
 
   /// @notice Modifier to check if the caller is the general admin
   modifier onlyLocalManager() {
-    if (!_HATS.isAdminOfHat(msg.sender, LOCAL_MANAGER_HAT_ID)) revert NotAuthorized();
+    if (!_HATS.isWearerOfHat(msg.sender, LOCAL_MANAGER_HAT_ID)) revert NotAuthorized();
     _;
   }
 
   /// @notice Modifier to check if the caller is the contract admin
   modifier onlyContractAdmin(address _contract, address _caller) {
     if (!_registeredContracts[_contract]) revert NotRegistered();
-    if (!_HATS.isAdminOfHat(_caller, _executionParams[_contract].localAdminHatId)) revert NotAuthorized();
+    if (!_HATS.isWearerOfHat(_caller, _executionParams[_contract].localAdminHatId)) revert NotAuthorized();
     _;
   }
 
