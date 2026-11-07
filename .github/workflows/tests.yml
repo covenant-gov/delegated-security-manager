@@ -6,26 +6,33 @@ concurrency:
   group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   unit-tests:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: stable
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20.x
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile --network-concurrency 1
+        run: yarn --frozen-lockfile --ignore-scripts --network-concurrency 1
 
       - name: Precompile
         run: yarn build
@@ -37,27 +44,32 @@ jobs:
   lint:
     name: Lint Commit Messages
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: wagoid/commitlint-github-action@v5
+      # Outer action SHA is pinned; the action still pulls docker image
+      # wagoid/commitlint-github-action:5.5.1 (mutable registry tag / incomplete chain pin).
+      - uses: wagoid/commitlint-github-action@9763196e10f27aef304c9b8b660d31d97fce0f99 # v5.5.1
 
       - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: stable
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20.x
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile --network-concurrency 1
+        run: yarn --frozen-lockfile --ignore-scripts --network-concurrency 1
 
       - name: Run solhint and forge-fmt
         run: yarn lint:check
